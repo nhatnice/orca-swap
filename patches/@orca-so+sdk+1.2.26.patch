@@ -1,0 +1,143 @@
+diff --git a/node_modules/@orca-so/sdk/dist/constants/devnet/pools.d.ts b/node_modules/@orca-so/sdk/dist/constants/devnet/pools.d.ts
+index 3cd853d..34ca92c 100644
+--- a/node_modules/@orca-so/sdk/dist/constants/devnet/pools.d.ts
++++ b/node_modules/@orca-so/sdk/dist/constants/devnet/pools.d.ts
+@@ -2,6 +2,7 @@ import { OrcaPoolParams } from "../../model/orca/pool/pool-types";
+ /**
+  * The following content is auto-generated.
+  */
++export declare const lmfUsdcPool: OrcaPoolParams;
+ export declare const solUsdcPool: OrcaPoolParams;
+ export declare const solUsdtPool: OrcaPoolParams;
+ export declare const usdcUsdtPool: OrcaPoolParams;
+diff --git a/node_modules/@orca-so/sdk/dist/constants/devnet/pools.js b/node_modules/@orca-so/sdk/dist/constants/devnet/pools.js
+index 72cb26a..49a04ff 100644
+--- a/node_modules/@orca-so/sdk/dist/constants/devnet/pools.js
++++ b/node_modules/@orca-so/sdk/dist/constants/devnet/pools.js
+@@ -154,6 +154,24 @@ exports.orcaUsdcPool = Object.freeze({
+         ownerFee: percentage_1.Percentage.fromFraction(5, 10000),
+     },
+ });
++exports.lmfUsdcPool = Object.freeze({
++  address: new web3_js_1.PublicKey("8Mt3QbGAn7x3BowDrDiFmXJbsmzY8mpQ5jNw8BqX5GWc"),
++  nonce: 255,
++  authority: new web3_js_1.PublicKey("GNq2yvhvpgrHna4MSaTTK1aJ4jNLkUAQJ7xZVyghtpd4"),
++  poolTokenMint: new web3_js_1.PublicKey("8Mt3QbGAn7x3BowDrDiFmXJbsmzY8mpQ5jNw8BqX5GWc"),
++  poolTokenDecimals: 6,
++  feeAccount: new web3_js_1.PublicKey("GNq2yvhvpgrHna4MSaTTK1aJ4jNLkUAQJ7xZVyghtpd4"),
++  tokenIds: [Tokens.lmfToken.mint.toString(), Tokens.usdcToken.mint.toString()],
++  tokens: {
++    [Tokens.orcaToken.mint.toString()]: Object.assign(Object.assign({}, Tokens.orcaToken), { addr: new web3_js_1.PublicKey("7KAqhu58omLjKjg1XNSw28JULED82mnA1vvAMVoAdA6T") }),
++      [Tokens.usdcToken.mint.toString()]: Object.assign(Object.assign({}, Tokens.usdcToken), { addr: new web3_js_1.PublicKey("8E2CH9fPNXbc5pqu1dWWkNsNZWvLcBEXdBnzzXuhvJNL") }),
++  },
++  curveType: pool_types_1.CurveType.ConstantProduct,
++  feeStructure: {
++      traderFee: percentage_1.Percentage.fromFraction(25, 10000),
++      ownerFee: percentage_1.Percentage.fromFraction(5, 10000),
++  },
++});
+ /**
+  * Mapping for OrcaPool parameters
+  * Key: poolTokenMint : OrcaPoolParams
+@@ -166,4 +184,5 @@ exports.orcaDevnetPoolConfigs = {
+     "9pRnvg7ihSJDLi6DGf3PLwr6xRRRrBPXsHYEgGL5hzgA": exports.ethUsdcPool,
+     CmDdQhusZWyi9fue27VSktYgkHefm3JXNdzc9kCpyvYi: exports.orcaSolPool,
+     "2ZEEntzoUN7XuMs88ukLGv5HRR1byL7wFWChryF5ZHri": exports.orcaUsdcPool,
++    "8Mt3QbGAn7x3BowDrDiFmXJbsmzY8mpQ5jNw8BqX5GWc" : exports.lmfUsdcPool
+ };
+diff --git a/node_modules/@orca-so/sdk/dist/constants/devnet/tokens.d.ts b/node_modules/@orca-so/sdk/dist/constants/devnet/tokens.d.ts
+index da43e41..8257265 100644
+--- a/node_modules/@orca-so/sdk/dist/constants/devnet/tokens.d.ts
++++ b/node_modules/@orca-so/sdk/dist/constants/devnet/tokens.d.ts
+@@ -7,3 +7,4 @@ export declare const orcaToken: OrcaToken;
+ export declare const solToken: OrcaToken;
+ export declare const usdcToken: OrcaToken;
+ export declare const usdtToken: OrcaToken;
++export declare const lmfToken: OrcaToken;
+\ No newline at end of file
+diff --git a/node_modules/@orca-so/sdk/dist/constants/devnet/tokens.js b/node_modules/@orca-so/sdk/dist/constants/devnet/tokens.js
+index 65b0a5f..c258c39 100644
+--- a/node_modules/@orca-so/sdk/dist/constants/devnet/tokens.js
++++ b/node_modules/@orca-so/sdk/dist/constants/devnet/tokens.js
+@@ -5,6 +5,12 @@ const web3_js_1 = require("@solana/web3.js");
+ /**
+  * The following content is auto-generated.
+  */
++exports.lmfToken = Object.freeze({
++  tag: "LMF",
++  name: "LMF",
++  mint: new web3_js_1.PublicKey("LMFzmYL6y1FX8HsEmZ6yNKNzercBmtmpg2ZoLwuUboU"),
++  scale: 6,
++});
+ exports.ethToken = Object.freeze({
+     tag: "ETH",
+     name: "Ethereum",
+diff --git a/node_modules/@orca-so/sdk/dist/public/devnet/pools/config.d.ts b/node_modules/@orca-so/sdk/dist/public/devnet/pools/config.d.ts
+index 626bd2d..6dffd6c 100644
+--- a/node_modules/@orca-so/sdk/dist/public/devnet/pools/config.d.ts
++++ b/node_modules/@orca-so/sdk/dist/public/devnet/pools/config.d.ts
+@@ -5,6 +5,7 @@
+  * A list of supported Orca pools in this SDK.
+  */
+ export declare enum OrcaPoolConfig {
++    LMF_USDC = "8Mt3QbGAn7x3BowDrDiFmXJbsmzY8mpQ5jNw8BqX5GWc",
+     SOL_USDC = "4GpUivZ2jvZqQ3vJRsoq5PwnYv6gdV9fJ9BzHT2JcRr7",
+     SOL_USDT = "2E4Mp6y2gFRteXiANnwzAJEhHwD3NX1wru3XvxJpGBq2",
+     USDC_USDT = "EBor1PR5XNGHjRVB6JDJuKVCQbvdr1CVZTaX1hTAdvQv",
+diff --git a/node_modules/@orca-so/sdk/dist/public/devnet/pools/config.js b/node_modules/@orca-so/sdk/dist/public/devnet/pools/config.js
+index df79612..7d19e94 100644
+--- a/node_modules/@orca-so/sdk/dist/public/devnet/pools/config.js
++++ b/node_modules/@orca-so/sdk/dist/public/devnet/pools/config.js
+@@ -9,6 +9,7 @@ exports.OrcaPoolConfig = void 0;
+  */
+ var OrcaPoolConfig;
+ (function (OrcaPoolConfig) {
++    OrcaPoolConfig["LMF_USDC"] = "8Mt3QbGAn7x3BowDrDiFmXJbsmzY8mpQ5jNw8BqX5GWc";
+     OrcaPoolConfig["SOL_USDC"] = "4GpUivZ2jvZqQ3vJRsoq5PwnYv6gdV9fJ9BzHT2JcRr7";
+     OrcaPoolConfig["SOL_USDT"] = "2E4Mp6y2gFRteXiANnwzAJEhHwD3NX1wru3XvxJpGBq2";
+     OrcaPoolConfig["USDC_USDT"] = "EBor1PR5XNGHjRVB6JDJuKVCQbvdr1CVZTaX1hTAdvQv";
+diff --git a/node_modules/@orca-so/sdk/dist/public/pools/config.d.ts b/node_modules/@orca-so/sdk/dist/public/pools/config.d.ts
+index 1eca696..2ef9b94 100644
+--- a/node_modules/@orca-so/sdk/dist/public/pools/config.d.ts
++++ b/node_modules/@orca-so/sdk/dist/public/pools/config.d.ts
+@@ -5,6 +5,7 @@
+  * A list of supported Orca pools in this SDK.
+  */
+ export declare enum OrcaPoolConfig {
++    LMF_USDC = "8Mt3QbGAn7x3BowDrDiFmXJbsmzY8mpQ5jNw8BqX5GWc",
+     SOL_USDC = "APDFRM3HMr8CAGXwKHiu2f5ePSpaiEJhaURwhsRrUUt9",
+     SOL_USDT = "FZthQCuYHhcfiDma7QrX7buDHwrZEd7vL8SjS6LQa3Tx",
+     ETH_SOL = "71FymgN2ZUf7VvVTLE8jYEnjP3jSK1Frp2XT1nHs8Hob",
+diff --git a/node_modules/@orca-so/sdk/dist/public/pools/config.js b/node_modules/@orca-so/sdk/dist/public/pools/config.js
+index 9800cd4..b19d1dd 100644
+--- a/node_modules/@orca-so/sdk/dist/public/pools/config.js
++++ b/node_modules/@orca-so/sdk/dist/public/pools/config.js
+@@ -9,6 +9,7 @@ exports.OrcaPoolConfig = void 0;
+  */
+ var OrcaPoolConfig;
+ (function (OrcaPoolConfig) {
++    OrcaPoolConfig["LMF_USDC"] = "8Mt3QbGAn7x3BowDrDiFmXJbsmzY8mpQ5jNw8BqX5GWc";
+     OrcaPoolConfig["SOL_USDC"] = "APDFRM3HMr8CAGXwKHiu2f5ePSpaiEJhaURwhsRrUUt9";
+     OrcaPoolConfig["SOL_USDT"] = "FZthQCuYHhcfiDma7QrX7buDHwrZEd7vL8SjS6LQa3Tx";
+     OrcaPoolConfig["ETH_SOL"] = "71FymgN2ZUf7VvVTLE8jYEnjP3jSK1Frp2XT1nHs8Hob";
+diff --git a/node_modules/@orca-so/sdk/dist/public/utils/web3/get-token-count.js b/node_modules/@orca-so/sdk/dist/public/utils/web3/get-token-count.js
+index 1b5ccd9..cfc3109 100644
+--- a/node_modules/@orca-so/sdk/dist/public/utils/web3/get-token-count.js
++++ b/node_modules/@orca-so/sdk/dist/public/utils/web3/get-token-count.js
+@@ -20,10 +20,16 @@ function getTokenCount(connection, poolParams, inputPoolToken, outputPoolToken)
+         if (poolParams.tokens[outputPoolToken.mint.toString()] == undefined) {
+             throw new Error("Output token not part of pool");
+         }
++        console.log("GET TOKEN COUNT");
++        console.log([
++          inputPoolToken.addr,
++          outputPoolToken.addr,
++      ]);
+         const accountInfos = yield connection.getMultipleAccountsInfo([
+             inputPoolToken.addr,
+             outputPoolToken.addr,
+         ]);
++        console.log("MAP TOKEN COUNT");
+         const tokens = accountInfos.map((info) => info != undefined ? (0, deserialize_account_1.deserializeAccount)(info.data) : undefined);
+         const inputTokenAccount = tokens[0], outputTokenAccount = tokens[1];
+         if (inputTokenAccount === undefined || outputTokenAccount === undefined) {
