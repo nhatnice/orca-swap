@@ -6,6 +6,11 @@ import ITradeBody from './interfaces/ITradeBody';
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
+  @Get('')
+  home() {
+    return 'HELLO !';
+  }
+
   @Post('buy')
   buy(@Body() body: ITradeBody) {
     try {

@@ -1,15 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import ITradeBody from './interfaces/ITradeBody';
 import { Connection, Keypair, PublicKey } from '@solana/web3.js';
-import {
-  DecimalUtil,
-  Network,
-  Orca,
-  OrcaPoolConfig,
-  Percentage,
-  ZERO,
-  getOrca,
-} from '@orca-so/sdk';
+import { DecimalUtil } from '@orca-so/sdk';
 import Decimal from 'decimal.js';
 import { base58 } from '@scure/base';
 import {
@@ -17,13 +9,10 @@ import {
   MIN_SQRT_PRICE,
   ORCA_WHIRLPOOL_PROGRAM_ID,
   PDAUtil,
-  SwapInput,
-  SwapUtils,
   TickUtil,
   WhirlpoolContext,
   WhirlpoolIx,
   buildWhirlpoolClient,
-  swapQuoteByInputToken,
   toTx,
 } from '@orca-so/whirlpools-sdk';
 import { BN, Wallet } from '@coral-xyz/anchor';
