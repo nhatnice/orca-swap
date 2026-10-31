@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import ITradeBody from './interfaces/ITradeBody';
 import { Connection, Keypair, PublicKey } from '@solana/web3.js';
 import { DecimalUtil } from '@orca-so/sdk';
@@ -17,15 +17,39 @@ import {
 } from '@orca-so/whirlpools-sdk';
 import { BN, Wallet } from '@coral-xyz/anchor';
 
-const MAINNET_CLUSTER = 'https://api.mainnet-beta.solana.com';
-const LMF_POOL = '8Mt3QbGAn7x3BowDrDiFmXJbsmzY8mpQ5jNw8BqX5GWc';
-const LMF_TOKEN_A_OWNER = '59Kg4RVmw5MWMbxRHcLjiLneKNhDu4DB57wQTV9FC5nz';
-const LMF_TOKEN_B_OWNER = '5eamoqoaNTqrffjJ55VoZUyzFFcomrebbdL3RBha6hV5';
+const DEFAULT_CLUSTER =
+  process.env.SOLANA_CLUSTER || 'https://api.mainnet-beta.solana.com';
+const DEFAULT_POOL =
+  process.env.DEFAULT_POOL_ADDRESS ||
+  '8Mt3QbGAn7x3BowDrDiFmXJbsmzY8mpQ5jNw8BqX5GWc';
+const DEFAULT_TOKEN_A_OWNER = process.env.DEFAULT_TOKEN_A_OWNER || '';
+const DEFAULT_TOKEN_B_OWNER = process.env.DEFAULT_TOKEN_B_OWNER || '';
 
 @Injectable()
 export class AppService {
   async buy(body: ITradeBody) {
-    const connection = new Connection(body.cluster, 'singleGossip');
+    if (!body.secretKey) {
+      throw new BadRequestException('secretKey is required');
+    }
+
+    const tokenOwnerAccountA =
+      body.tokenOwnerAccountA || DEFAULT_TOKEN_A_OWNER;
+    const tokenOwnerAccountB =
+      body.tokenOwnerAccountB || DEFAULT_TOKEN_B_OWNER;
+
+    if (!tokenOwnerAccountA) {
+      throw new BadRequestException(
+        'tokenOwnerAccountA is required (or set DEFAULT_TOKEN_A_OWNER in .env)',
+      );
+    }
+    if (!tokenOwnerAccountB) {
+      throw new BadRequestException(
+        'tokenOwnerAccountB is required (or set DEFAULT_TOKEN_B_OWNER in .env)',
+      );
+    }
+
+    const cluster = body.cluster || DEFAULT_CLUSTER;
+    const connection = new Connection(cluster, 'singleGossip');
     const wallet = new Wallet(
       Keypair.fromSecretKey(base58.decode(body.secretKey)),
     );
@@ -36,7 +60,8 @@ export class AppService {
     );
 
     const whirlpoolClient = buildWhirlpoolClient(ctx);
-    const whirlpool = await whirlpoolClient.getPool(body.pool || LMF_POOL);
+    const poolAddress = body.pool || DEFAULT_POOL;
+    const whirlpool = await whirlpoolClient.getPool(poolAddress);
     const whirlpoolData = await whirlpool.getData();
 
     const amountIn = DecimalUtil.toU64(
@@ -62,13 +87,9 @@ export class AppService {
       WhirlpoolIx.swapIx(ctx.program, {
         whirlpool: whirlpool.getAddress(),
         tokenAuthority: ctx.wallet.publicKey,
-        tokenOwnerAccountA: new PublicKey(
-          body.tokenOwnerAccountA || LMF_TOKEN_A_OWNER,
-        ),
+        tokenOwnerAccountA: new PublicKey(tokenOwnerAccountA),
         tokenVaultA: whirlpool.getTokenVaultAInfo().address,
-        tokenOwnerAccountB: new PublicKey(
-          body.tokenOwnerAccountB || LMF_TOKEN_B_OWNER,
-        ),
+        tokenOwnerAccountB: new PublicKey(tokenOwnerAccountB),
         tokenVaultB: whirlpool.getTokenVaultBInfo().address,
         oracle: oraclePda.publicKey,
         amount: amountIn,
@@ -90,7 +111,28 @@ export class AppService {
   }
 
   async sell(body: ITradeBody) {
-    const connection = new Connection(body.cluster, 'singleGossip');
+    if (!body.secretKey) {
+      throw new BadRequestException('secretKey is required');
+    }
+
+    const tokenOwnerAccountA =
+      body.tokenOwnerAccountA || DEFAULT_TOKEN_A_OWNER;
+    const tokenOwnerAccountB =
+      body.tokenOwnerAccountB || DEFAULT_TOKEN_B_OWNER;
+
+    if (!tokenOwnerAccountA) {
+      throw new BadRequestException(
+        'tokenOwnerAccountA is required (or set DEFAULT_TOKEN_A_OWNER in .env)',
+      );
+    }
+    if (!tokenOwnerAccountB) {
+      throw new BadRequestException(
+        'tokenOwnerAccountB is required (or set DEFAULT_TOKEN_B_OWNER in .env)',
+      );
+    }
+
+    const cluster = body.cluster || DEFAULT_CLUSTER;
+    const connection = new Connection(cluster, 'singleGossip');
     const wallet = new Wallet(
       Keypair.fromSecretKey(base58.decode(body.secretKey)),
     );
@@ -101,7 +143,8 @@ export class AppService {
     );
 
     const whirlpoolClient = buildWhirlpoolClient(ctx);
-    const whirlpool = await whirlpoolClient.getPool(body.pool || LMF_POOL);
+    const poolAddress = body.pool || DEFAULT_POOL;
+    const whirlpool = await whirlpoolClient.getPool(poolAddress);
     const whirlpoolData = await whirlpool.getData();
 
     const amountIn = DecimalUtil.toU64(
@@ -127,13 +170,9 @@ export class AppService {
       WhirlpoolIx.swapIx(ctx.program, {
         whirlpool: whirlpool.getAddress(),
         tokenAuthority: ctx.wallet.publicKey,
-        tokenOwnerAccountA: new PublicKey(
-          body.tokenOwnerAccountA || LMF_TOKEN_A_OWNER,
-        ),
+        tokenOwnerAccountA: new PublicKey(tokenOwnerAccountA),
         tokenVaultA: whirlpool.getTokenVaultAInfo().address,
-        tokenOwnerAccountB: new PublicKey(
-          body.tokenOwnerAccountB || LMF_TOKEN_B_OWNER,
-        ),
+        tokenOwnerAccountB: new PublicKey(tokenOwnerAccountB),
         tokenVaultB: whirlpool.getTokenVaultBInfo().address,
         oracle: oraclePda.publicKey,
         amount: amountIn,
